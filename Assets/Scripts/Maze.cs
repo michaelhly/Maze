@@ -3,33 +3,50 @@ using System.Collections;
 
 public class Maze : MonoBehaviour
 {
-    public int sizeX, sizeZ;
+    public MazeCoordinates size;
     public float generationStepDelay;
 
     public MazeCell cellPrefab;
 
     private MazeCell[,] cells;
 
+    public MazeCell GetCell(MazeCoordinates coordinates)
+    {
+        return cells[coordinates.x, coordinates.z];
+    }
+
     public IEnumerator Generate()
     {
         WaitForSeconds delay = new WaitForSeconds(generationStepDelay);
-        cells = new MazeCell[sizeX, sizeZ];
-        for (int x = 0; x < sizeX; x++)
+        cells = new MazeCell[size.x, size.z];
+        MazeCoordinates coordinates = RandomCoordinates;
+        while (ContainsCoordinates(coordinates) && GetCell(coordinates) == null)
         {
-            for (int z = 0; z < sizeZ; z++)
-            {
-                yield return delay;
-                CreateCell(x, z);
-            }
+            yield return delay;
+            CreateCell(coordinates);
+            coordinates += MazeDirections.RandomValue.ToMazeCoordiantes();
         }
     }
 
-    private void CreateCell(int x, int z)
+    public MazeCoordinates RandomCoordinates
+    {
+        get
+        {
+            return new MazeCoordinates(Random.Range(0, size.x), Random.Range(0, size.z));
+        }
+    }
+
+    public bool ContainsCoordinates(MazeCoordinates coordinate)
+    {
+        return coordinate.x >= 0 && coordinate.x < size.x && coordinate.z >= 0 && coordinate.z < size.z;
+    }
+
+    private void CreateCell(MazeCoordinates coords)
     {
         MazeCell newCell = Instantiate(cellPrefab) as MazeCell;
-        cells[x, z] = newCell;
-        newCell.name = "Maze Cell " + x + ", " + z;
+        cells[coords.x, coords.z] = newCell;
+        newCell.name = "Maze Cell " + coords.x + ", " + coords.z;
         newCell.transform.parent = transform;
-        newCell.transform.localPosition = new Vector3(x - sizeX * 0.5f + 0.5f, 0f, z - sizeZ * 0.5f + 0.5f);
+        newCell.transform.localPosition = new Vector3(coords.x - size.x * 0.5f + 0.5f, 0f, coords.z - size.z * 0.5f + 0.5f);
     }
 }

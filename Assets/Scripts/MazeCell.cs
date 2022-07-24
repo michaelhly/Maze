@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class MazeCell : MonoBehaviour
 {
+    public MazeCoordinates coords;
+
     // Start is called before the first frame update
     void Start()
     {
