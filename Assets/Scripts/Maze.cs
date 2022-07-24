@@ -4,18 +4,21 @@ using System.Collections;
 public class Maze : MonoBehaviour
 {
     public int sizeX, sizeZ;
+    public float generationStepDelay;
 
     public MazeCell cellPrefab;
 
     private MazeCell[,] cells;
 
-    public void Generate()
+    public IEnumerator Generate()
     {
+        WaitForSeconds delay = new WaitForSeconds(generationStepDelay);
         cells = new MazeCell[sizeX, sizeZ];
         for (int x = 0; x < sizeX; x++)
         {
             for (int z = 0; z < sizeZ; z++)
             {
+                yield return delay;
                 CreateCell(x, z);
             }
         }
