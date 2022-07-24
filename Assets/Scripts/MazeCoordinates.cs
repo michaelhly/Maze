@@ -1,4 +1,3 @@
-
 // Struct to help us manipluate maze coordindates as a single value
 [System.Serializable]
 public struct MazeCoordinates

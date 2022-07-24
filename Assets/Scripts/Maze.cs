@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class Maze : MonoBehaviour
 {
@@ -10,22 +11,23 @@ public class Maze : MonoBehaviour
 
     private MazeCell[,] cells;
 
-    public MazeCell GetCell(MazeCoordinates coordinates)
-    {
-        return cells[coordinates.x, coordinates.z];
-    }
-
     public IEnumerator Generate()
     {
         WaitForSeconds delay = new WaitForSeconds(generationStepDelay);
         cells = new MazeCell[size.x, size.z];
-        MazeCoordinates coordinates = RandomCoordinates;
-        while (ContainsCoordinates(coordinates) && GetCell(coordinates) == null)
+        List<MazeCell> activeCells = new List<MazeCell>();
+        DoFirstGenerationStep(activeCells);
+        while (activeCells.Count > 0)
         {
+            Debug.Log(activeCells);
             yield return delay;
-            CreateCell(coordinates);
-            coordinates += MazeDirections.RandomValue.ToMazeCoordiantes();
+            DoNextGenerationStep(activeCells);
         }
+    }
+
+    public MazeCell GetCell(MazeCoordinates coordinates)
+    {
+        return cells[coordinates.x, coordinates.z];
     }
 
     public MazeCoordinates RandomCoordinates
@@ -41,12 +43,35 @@ public class Maze : MonoBehaviour
         return coordinate.x >= 0 && coordinate.x < size.x && coordinate.z >= 0 && coordinate.z < size.z;
     }
 
-    private void CreateCell(MazeCoordinates coords)
+    private MazeCell CreateCell(MazeCoordinates coords)
     {
-        MazeCell newCell = Instantiate(cellPrefab) as MazeCell;
+        MazeCell newCell = Instantiate(cellPrefab);
         cells[coords.x, coords.z] = newCell;
+        newCell.coords = coords;
         newCell.name = "Maze Cell " + coords.x + ", " + coords.z;
         newCell.transform.parent = transform;
         newCell.transform.localPosition = new Vector3(coords.x - size.x * 0.5f + 0.5f, 0f, coords.z - size.z * 0.5f + 0.5f);
+        return newCell;
+    }
+
+    private void DoFirstGenerationStep(List<MazeCell> activeCells)
+    {
+        activeCells.Add(CreateCell(RandomCoordinates));
+    }
+
+    private void DoNextGenerationStep(List<MazeCell> activeCells)
+    {
+        int currentIndex = activeCells.Count - 1;
+        MazeCell currentCell = activeCells[currentIndex];
+        MazeDirection direction = MazeDirections.RandomValue;
+        MazeCoordinates coordinates = currentCell.coords + direction.ToMazeCoordiantes();
+        if (ContainsCoordinates(coordinates) && GetCell(coordinates) == null)
+        {
+            activeCells.Add(CreateCell(coordinates));
+        }
+        else
+        {
+            activeCells.RemoveAt(currentIndex);
+        }
     }
 }
