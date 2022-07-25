@@ -8,14 +8,16 @@ public class Maze : MonoBehaviour
     public float generationStepDelay;
 
     public MazeCell cellPrefab;
+    public MazePassage passagePrefab;
+    public MazeWall wallPrefab;
 
     private MazeCell[,] cells;
 
     public IEnumerator Generate()
     {
-        WaitForSeconds delay = new WaitForSeconds(generationStepDelay);
+        WaitForSeconds delay = new(generationStepDelay);
         cells = new MazeCell[size.x, size.z];
-        List<MazeCell> activeCells = new List<MazeCell>();
+        List<MazeCell> activeCells = new();
         DoFirstGenerationStep(activeCells);
         while (activeCells.Count > 0)
         {
@@ -53,6 +55,25 @@ public class Maze : MonoBehaviour
         return newCell;
     }
 
+    private void CreatePassage(MazeCell cell, MazeCell otherCell, MazeDirection direction)
+    {
+        MazePassage passage = Instantiate(passagePrefab) as MazePassage;
+        passage.Initialize(cell, otherCell, direction);
+        passage = Instantiate(passagePrefab) as MazePassage;
+        passage.Initialize(otherCell, cell, direction.GetOpposite());
+    }
+
+    private void CreateWall(MazeCell cell, MazeCell otherCell, MazeDirection direction)
+    {
+        MazeWall wall = Instantiate(wallPrefab);
+        wall.Initialize(cell, otherCell, direction);
+        if (otherCell != null)
+        {
+            wall = Instantiate(wallPrefab);
+            wall.Initialize(otherCell, cell, direction.GetOpposite());
+        }
+    }
+
     private void DoFirstGenerationStep(List<MazeCell> activeCells)
     {
         activeCells.Add(CreateCell(RandomCoordinates));
@@ -64,12 +85,24 @@ public class Maze : MonoBehaviour
         MazeCell currentCell = activeCells[currentIndex];
         MazeDirection direction = MazeDirections.RandomValue;
         MazeCoordinates coordinates = currentCell.coords + direction.ToMazeCoordiantes();
-        if (ContainsCoordinates(coordinates) && GetCell(coordinates) == null)
+        if (ContainsCoordinates(coordinates))
         {
-            activeCells.Add(CreateCell(coordinates));
+            MazeCell neighbor = GetCell(coordinates);
+            if (neighbor == null)
+            {
+                neighbor = CreateCell(coordinates);
+                CreatePassage(currentCell, neighbor, direction);
+                activeCells.Add(neighbor);
+            }
+            else
+            {
+                CreateWall(currentCell, neighbor, direction);
+                activeCells.RemoveAt(currentIndex);
+            }
         }
         else
         {
+            CreateWall(currentCell, null, direction);
             activeCells.RemoveAt(currentIndex);
         }
     }

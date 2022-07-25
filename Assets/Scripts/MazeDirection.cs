@@ -23,7 +23,7 @@ public static class MazeDirections
         }
     }
 
-    private static MazeCoordinates[] vectors = {
+    private static readonly MazeCoordinates[] vectors = {
         new MazeCoordinates(0, 1),
         new MazeCoordinates(1, 0),
         new MazeCoordinates(0, -1),
@@ -33,5 +33,29 @@ public static class MazeDirections
     public static MazeCoordinates ToMazeCoordiantes(this MazeDirection direction)
     {
         return vectors[(int)direction];
+    }
+
+    private static readonly MazeDirection[] opposites = {
+        MazeDirection.South,
+        MazeDirection.West,
+        MazeDirection.North,
+        MazeDirection.East
+    };
+
+    public static MazeDirection GetOpposite(this MazeDirection direction)
+    {
+        return opposites[(int)direction];
+    }
+
+    private static readonly Quaternion[] rotations = {
+        Quaternion.identity,
+        Quaternion.Euler(0f, 90f, 0f),
+        Quaternion.Euler(0f, 180f, 0f),
+        Quaternion.Euler(0f, 270f, 0f)
+    };
+
+    public static Quaternion ToRotation(this MazeDirection direction)
+    {
+        return rotations[(int)direction];
     }
 }

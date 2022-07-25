@@ -369,6 +369,14 @@ PrefabInstance:
       propertyPath: size.z
       value: 20
       objectReference: {fileID: 0}
+    - target: {fileID: -2821327506715851304, guid: ff14e5896766b46b1979197da11351d6, type: 3}
+      propertyPath: wallPrefab
+      value: 
+      objectReference: {fileID: 7386617943525400121, guid: b81c845f610ab408eab6ee91e8d1cd24, type: 3}
+    - target: {fileID: -2821327506715851304, guid: ff14e5896766b46b1979197da11351d6, type: 3}
+      propertyPath: passagePrefab
+      value: 
+      objectReference: {fileID: 3004512823881099073, guid: 7bdea54f0ba904f57b17079899674ac5, type: 3}
     - target: {fileID: 5788178189022906010, guid: ff14e5896766b46b1979197da11351d6, type: 3}
       propertyPath: m_RootOrder
       value: 1
