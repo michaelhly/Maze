@@ -19,7 +19,6 @@ public class Maze : MonoBehaviour
         DoFirstGenerationStep(activeCells);
         while (activeCells.Count > 0)
         {
-            Debug.Log(activeCells);
             yield return delay;
             DoNextGenerationStep(activeCells);
         }

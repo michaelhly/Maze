@@ -17,4 +17,11 @@ public class MazeCell : MonoBehaviour
     {
 
     }
+
+    public override string ToString()
+    {
+        return string.Format(
+            "MazeCell(x:{0}, z:{1})", coords.x, coords.z
+        );
+    }
 }
